@@ -15,6 +15,7 @@ def main():
     cleaner.clean_with_dropna()
 
     datamanager.print_data()
+    datamanager.save_data_to_file("cleaned_student_scores_random_names")
 
 
 if __name__ == '__main__':
