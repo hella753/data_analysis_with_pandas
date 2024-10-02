@@ -1,5 +1,4 @@
 from pandas import DataFrame, Series
-from unicodedata import numeric
 
 
 class Analyzer:
@@ -65,7 +64,7 @@ class Analyzer:
         semester_average = self.find_average()
         new_df = DataFrame(semester_average)
         new_df.index.name = "Semester"
-        new_df.to_excel("semester_average.xlsx", index=True)
+        new_df.to_excel("data/semester_average.xlsx", index=True)
 
     @staticmethod
     def comparison(stud_dict: dict) -> str:
@@ -114,13 +113,23 @@ class Analyzer:
         if compared:
             print(compared)
 
-    def average_all_subject(self):
+    def average_all_subject(self) -> tuple:
+        """
+        Returns the average scores of all subjects.
+
+        :return: Tuple: Tuple containing the subjects and the average scores.
+        """
         data = self.df[self.numeric_columns].mean().round(2)
         columns = list(data.index)
         values = list(data.values)
         return columns, values
 
-    def average_all_semester(self):
+    def average_all_semester(self) -> tuple:
+        """
+        Returns the average scores of all semesters.
+
+        :return: Tuple: Tuple containing the semesters and the average scores.
+        """
         data = self.df.groupby("Semester")[self.numeric_columns].mean().mean(axis=1).round(2)
         x = list(data.index)
         y = list(data.values)

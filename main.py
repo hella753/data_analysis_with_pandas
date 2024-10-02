@@ -6,7 +6,7 @@ import visualizer
 
 
 def main():
-    data = pd.read_csv('student_scores_random_names.csv')
+    data = pd.read_csv('data/student_scores_random_names.csv')
 
     datamanager = DataManager(data)
     # datamanager.print_data()
@@ -18,7 +18,7 @@ def main():
     # cleaner.clean_with_mean()  # Uncomment this line to clean the data with mean
     cleaner.clean_with_zeros()
 
-    datamanager.save_data_to_file("cleaned_student_scores_random_names.csv")
+    datamanager.save_data_to_file("data/cleaned_student_scores_random_names.csv")
 
     analyzer = Analyzer(df)
     print("################## TASK 1 ################################")
@@ -39,18 +39,18 @@ def main():
     print("################## TASK 5 ################################")
     print("New DataFrame with the average scores of the students in each semester:")
     analyzer.new_dataframe()
-    data = pd.read_excel('semester_average.xlsx', index_col=0)
+    data = pd.read_excel('data/semester_average.xlsx', index_col=0)
     print(data)
 
     print("################## TASK 6 ################################")
     print("Students who got better:")
     analyzer.students_who_got_better()
 
-    subject_data = analyzer.average_all_subject()
-    visualizer.plot_average(subject_data)
+    subject_data = analyzer.average_all_subject()  # Get the average of all subjects
+    visualizer.plot_average(subject_data)  # Plot the average of all subjects
 
-    semester_data = analyzer.average_all_semester()
-    visualizer.plot_average_semester(semester_data)
+    semester_data = analyzer.average_all_semester()  # Get the average of all semesters
+    visualizer.plot_average_semester(semester_data)  # Plot the average of all semesters
 
 
 if __name__ == '__main__':

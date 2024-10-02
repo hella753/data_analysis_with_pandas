@@ -44,5 +44,10 @@ class Cleaner:
         return self.df
 
     def clean_with_zeros(self) -> DataFrame:
+        """
+        Fills empty cells with zeros
+
+        :return: DataFrame: cleaned dataframe
+        """
         self.df.fillna(0, inplace=True)
         return self.df
