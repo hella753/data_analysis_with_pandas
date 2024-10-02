@@ -42,3 +42,7 @@ class Cleaner:
             inplace=True
         )
         return self.df
+
+    def clean_with_zeros(self) -> DataFrame:
+        self.df.fillna(0, inplace=True)
+        return self.df

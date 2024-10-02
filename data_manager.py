@@ -15,6 +15,8 @@ class DataManager:
         :param dataframe: pandas dataframe object
         """
         self.df: DataFrame = dataframe
+        # pd.set_option('display.max_rows', None)  # Uncomment to show all rows
+        # pd.set_option('display.max_columns', None)  # Uncomment to show all columns
 
     def print_data(self) -> None:
         """
@@ -82,10 +84,11 @@ class DataManager:
         row_df = DataFrame([row_data])
         self.df = pd.concat([self.df, row_df], ignore_index=True)
 
-    def save_data_to_file(self, file_name: str) -> None:
+    def save_data_to_file(self, file_name: str, index = False) -> None:
         """
         Saves the data in the dataframe to a file
 
+        :param index: bool: whether to include the index in the file
         :param file_name: str: name of the file
         """
-        self.df.to_csv(f'{file_name}.csv', index=False)
+        self.df.to_csv(file_name, index=index)
