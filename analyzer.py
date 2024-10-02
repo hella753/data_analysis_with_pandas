@@ -78,7 +78,7 @@ class Analyzer:
         values_list: list = list(stud_dict.values())
         sorted_values: list = sorted(values_list)
 
-        if sorted_values == values_list and values_list != []:
+        if sorted_values == values_list and values_list != [] and len(values_list) > 1:
             student_name = list(stud_dict.keys())[0][0]
             return student_name
 
@@ -91,19 +91,22 @@ class Analyzer:
         grouped = self.df.groupby(["Student", "Semester"]).first()
         grouped_average = grouped.mean(axis=1)
         # print(grouped_average)
+
         previous_student = None
         student_dict = {}
         for student, group in grouped_average.items():
-            if previous_student is None:
-                previous_student = student[0]
+            current_student = student[0]
 
-            if previous_student != student[0]:
-                previous_student = student[0]
+            if previous_student is None:
+                previous_student = current_student
+
+            if previous_student != current_student:
                 compared = self.comparison(student_dict)
                 if compared is not None:
                     print(compared)
                 student_dict={}
-            else:
-                student_dict[student] = group
+
+            previous_student = current_student
+            student_dict[student] = group
 
 
