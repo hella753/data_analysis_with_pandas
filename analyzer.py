@@ -1,4 +1,5 @@
 from pandas import DataFrame, Series
+from unicodedata import numeric
 
 
 class Analyzer:
@@ -102,11 +103,25 @@ class Analyzer:
 
             if previous_student != current_student:
                 compared = self.comparison(student_dict)
-                if compared is not None:
+                if compared:
                     print(compared)
                 student_dict={}
 
             previous_student = current_student
             student_dict[student] = group
 
+        compared = self.comparison(student_dict)
+        if compared:
+            print(compared)
 
+    def average_all_subject(self):
+        data = self.df[self.numeric_columns].mean().round(2)
+        columns = list(data.index)
+        values = list(data.values)
+        return columns, values
+
+    def average_all_semester(self):
+        data = self.df.groupby("Semester")[self.numeric_columns].mean().mean(axis=1).round(2)
+        x = list(data.index)
+        y = list(data.values)
+        return x, y

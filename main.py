@@ -2,6 +2,7 @@ import pandas as pd
 from data_manager import DataManager
 from cleaner import Cleaner
 from analyzer import Analyzer
+import visualizer
 
 
 def main():
@@ -44,6 +45,13 @@ def main():
     print("################## TASK 6 ################################")
     print("Students who got better:")
     analyzer.students_who_got_better()
+
+    subject_data = analyzer.average_all_subject()
+    visualizer.plot_average(subject_data)
+
+    semester_data = analyzer.average_all_semester()
+    visualizer.plot_average_semester(semester_data)
+
 
 if __name__ == '__main__':
     main()
