@@ -3,16 +3,20 @@ from pandas import DataFrame, Series
 
 class Analyzer:
     """
-    Responsible for analyzing the data and providing basic statistics about the students.
+    Responsible for analyzing the data and providing
+    basic statistics about the students.
     """
-    def __init__(self, dataframe: DataFrame) ->  None:
+    def __init__(self, dataframe: DataFrame) -> None:
         """
         Initializes the Analyzer object with the given dataframe.
 
-        :param dataframe: DataFrame: DataFrame object containing the data of the students.
+        :param dataframe: DataFrame: DataFrame object containing
+        the data of the students.
         """
         self.df = dataframe
-        self.numeric_columns: list = ["Math", "Physics", "Chemistry", "Biology", "English"]
+        self.numeric_columns: list = self.df.select_dtypes(
+            include=['int64', 'float64']
+        ).columns.tolist()
 
     def students_who_failed(self) -> Series:
         """
@@ -20,7 +24,9 @@ class Analyzer:
 
         :return: Series: DataFrame object containing the list of students.
         """
-        df = self.df[(self.df[self.numeric_columns] < 50).any(axis=1)]["Student"]
+        df = self.df[
+            (self.df[self.numeric_columns] < 50).any(axis=1)
+        ]["Student"]
         df = df.drop_duplicates(inplace=False)
         df.reset_index(drop=True, inplace=True)
         return df
@@ -37,22 +43,37 @@ class Analyzer:
         """
         Returns the students with the highest average grade.
 
-        :return: Series: Series object containing the students with the highest average grade.
+        :return: Series: Series object containing the students
+        with the highest average grade.
         """
-        mean = self.df.groupby('Student').mean(numeric_only=True)
-        student_average_grade = mean.mean(axis=1).round(2)
+        data = self.df.groupby('Student').agg(
+            {
+                "Math": ["sum", "count"],
+                "Physics": ["sum", "count"],
+                "Chemistry": ["sum", "count"],
+                "Biology": ["sum", "count"],
+                "English": ["sum", "count"]
+            }
+        )
+        student_average_grade = (
+                data.xs('sum', axis=1, level=1).sum(axis=1) /   # type: ignore
+                data.xs('count', axis=1, level=1).sum(axis=1)   # type: ignore
+        )
         max_average = student_average_grade.max()
-        students_with_max_avg_grade = student_average_grade[student_average_grade == max_average]
+        students_with_max_avg_grade = (
+            student_average_grade[student_average_grade == max_average]
+        )
         return students_with_max_avg_grade
 
     def lowest_scores(self) -> tuple:
         """
-        Returns the subject with the lowest average score and the average score.
+        Returns the subject with the lowest average score and
+        the average score.
 
         :return: Tuple: Tuple containing the subject and the average score.
         """
         mean = self.df.mean(numeric_only=True)
-        min_value =  round(float(mean.min()), 2)
+        min_value = round(float(mean.min()), 2)
         min_subject = mean.idxmin()
         return min_subject, min_value
 
@@ -67,51 +88,38 @@ class Analyzer:
         new_df.to_excel("data/semester_average.xlsx", index=True)
 
     @staticmethod
-    def comparison(stud_dict: dict) -> str:
+    def comparison(grades: list) -> bool:
         """
-        Compares the values of the dictionary and returns the key of the dictionary if the
-        values are sorted in ascending order naturally.
+        Compares the list to a sorted version of the list and returns True
+        if the list is sorted.
 
-        :param stud_dict: dict: Dictionary containing the student, semester and the average score.
-        :return: str: The student who's average score got better throughout the semesters.
+        :param grades: list: list containing the average score.
+        :return: bool: True if the list is sorted, False otherwise.
         """
-        values_list: list = list(stud_dict.values())
-        sorted_values: list = sorted(values_list)
-
-        if sorted_values == values_list and values_list != [] and len(values_list) > 1:
-            student_name = list(stud_dict.keys())[0][0]
-            return student_name
+        sorted_values: list = sorted(grades)
+        if len(grades) <= 1:
+            return False
+        return list(grades) == sorted_values
 
     def students_who_got_better(self) -> None:
         """
-        Groups the dataframe by student and semester, calculates the average score and
-        for each student checks if the average score got better throughout the semesters
+        Groups the dataframe by student and semester, calculates
+        the average score and for each student checks if the average
+        cscore got better throughout the semesters
         with the help of the comparison method.
         """
         grouped = self.df.groupby(["Student", "Semester"]).first()
         grouped_average = grouped.mean(axis=1)
-        # print(grouped_average)
 
-        previous_student = None
-        student_dict = {}
-        for student, group in grouped_average.items():
-            current_student = student[0]
+        student_improved = grouped_average.groupby(level=0).filter(
+            lambda x: self.comparison(x.values)
+        )
+        students = list(student_improved.index)
+        student_names = [student[0] for student in students]
+        unique_students = set(student_names)
 
-            if previous_student is None:
-                previous_student = current_student
-
-            if previous_student != current_student:
-                compared = self.comparison(student_dict)
-                if compared:
-                    print(compared)
-                student_dict={}
-
-            previous_student = current_student
-            student_dict[student] = group
-
-        compared = self.comparison(student_dict)
-        if compared:
-            print(compared)
+        for student in unique_students:
+            print(student)
 
     def average_all_subject(self) -> tuple:
         """
@@ -130,7 +138,17 @@ class Analyzer:
 
         :return: Tuple: Tuple containing the semesters and the average scores.
         """
-        data = self.df.groupby("Semester")[self.numeric_columns].mean().mean(axis=1).round(2)
-        x = list(data.index)
-        y = list(data.values)
+        data = self.df.groupby("Semester")[self.numeric_columns].agg({
+            "Math": ["sum", "count"],
+            "Physics": ["sum", "count"],
+            "Chemistry": ["sum", "count"],
+            "Biology": ["sum", "count"],
+            "English": ["sum", "count"]
+        })
+        average_data: Series = (
+            data.xs('sum', axis=1, level=1).sum(axis=1) /   # type: ignore
+            data.xs('count', axis=1, level=1).sum(axis=1)   # type: ignore
+        )
+        x = list(average_data.index)
+        y = average_data.to_list()
         return x, y

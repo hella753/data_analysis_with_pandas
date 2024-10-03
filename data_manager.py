@@ -15,14 +15,16 @@ class DataManager:
         :param dataframe: pandas dataframe object
         """
         self.df: DataFrame = dataframe
-        # pd.set_option('display.max_rows', None)  # Uncomment to show all rows
-        # pd.set_option('display.max_columns', None)  # Uncomment to show all columns
+        # Uncomment to show all rows and columns
+        # pd.set_option('display.max_rows', None)
+        # pd.set_option('display.max_columns', None)
 
-    def print_data(self) -> None:
+    def print_data(self) -> DataFrame:
         """
         Prints the data in the dataframe
         """
         print(self.df)
+        return self.df
 
     def get_column(self, column_name: str) -> Series:
         """
@@ -84,7 +86,7 @@ class DataManager:
         row_df = DataFrame([row_data])
         self.df = pd.concat([self.df, row_df], ignore_index=True)
 
-    def save_data_to_file(self, file_name: str, index = False) -> None:
+    def save_to_csv(self, file_name: str, index=False) -> None:
         """
         Saves the data in the dataframe to a file
 

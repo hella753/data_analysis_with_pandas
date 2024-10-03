@@ -13,6 +13,12 @@ class Cleaner:
         """
         self.df: DataFrame = dataframe
         self.df.drop_duplicates(inplace=True)
+        self.df.dropna(
+            subset=["Math", "Physics", "Chemistry", "Biology", "English"],
+            how="all",
+            inplace=True
+        )
+        self.df.reset_index(drop=True, inplace=True)
 
     def clean_with_dropna(self) -> DataFrame:
         """

@@ -9,16 +9,17 @@ def main():
     data = pd.read_csv('data/student_scores_random_names.csv')
 
     datamanager = DataManager(data)
-    # datamanager.print_data()
-
-    df = datamanager.df
+    df = datamanager.print_data()
     cleaner = Cleaner(df)
 
-    # cleaner.clean_with_dropna() # Uncomment this line to clean the data with dropna
-    # cleaner.clean_with_mean()  # Uncomment this line to clean the data with mean
-    cleaner.clean_with_zeros()
+    # Uncomment this line to clean the data with dropna
+    # cleaner.clean_with_dropna()
+    # Uncomment this line to clean the data with mean
+    # cleaner.clean_with_mean()
+    df = cleaner.clean_with_zeros()
+    # datamanager.print_data()
 
-    datamanager.save_data_to_file("data/cleaned_student_scores_random_names.csv")
+    datamanager.save_to_csv("data/cleaned_student_scores_random_names.csv")
 
     analyzer = Analyzer(df)
     print("################## TASK 1 ################################")
@@ -37,7 +38,10 @@ def main():
     print(analyzer.lowest_scores())
 
     print("################## TASK 5 ################################")
-    print("New DataFrame with the average scores of the students in each semester:")
+    print(
+        "New DataFrame with the average scores of the students "
+        "in each semester:"
+    )
     analyzer.new_dataframe()
     data = pd.read_excel('data/semester_average.xlsx', index_col=0)
     print(data)
@@ -46,11 +50,17 @@ def main():
     print("Students who got better:")
     analyzer.students_who_got_better()
 
-    subject_data = analyzer.average_all_subject()  # Get the average of all subjects
-    visualizer.plot_average(subject_data)  # Plot the average of all subjects
+    # Get the average of all subjects
+    subject_data = analyzer.average_all_subject()
 
-    semester_data = analyzer.average_all_semester()  # Get the average of all semesters
-    visualizer.plot_average_semester(semester_data)  # Plot the average of all semesters
+    # Plot the average of all subjects
+    visualizer.plot_average(subject_data)
+
+    # Get the average of all semesters
+    semester_data = analyzer.average_all_semester()
+
+    # Plot the average of all semesters
+    visualizer.plot_average_semester(semester_data)
 
 
 if __name__ == '__main__':
