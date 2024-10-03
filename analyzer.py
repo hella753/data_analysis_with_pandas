@@ -25,8 +25,10 @@ class Analyzer:
         :return: Series: DataFrame object containing the list of students.
         """
         df = self.df[
-            (self.df[self.numeric_columns] < 50).any(axis=1)
-        ]["Student"]
+            (
+                (self.df[self.numeric_columns] < 50) &
+                (self.df[self.numeric_columns] > 0)
+            ).any(axis=1)]["Student"]
         df = df.drop_duplicates(inplace=False)
         df.reset_index(drop=True, inplace=True)
         return df
@@ -55,7 +57,7 @@ class Analyzer:
                 "English": ["sum", "count"]
             }
         )
-        student_average_grade = (
+        student_average_grade: Series = (
                 data.xs('sum', axis=1, level=1).sum(axis=1) /   # type: ignore
                 data.xs('count', axis=1, level=1).sum(axis=1)   # type: ignore
         )

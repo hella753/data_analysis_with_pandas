@@ -10,13 +10,17 @@ def main():
 
     datamanager = DataManager(data)
     df = datamanager.print_data()
-    cleaner = Cleaner(df)
 
-    # Uncomment this line to clean the data with dropna
+    # Drops the rows with all NaN values in numeric columns
+    cleaner = Cleaner(df)
+    datamanager.print_data()
+
+    # Uncomment this line to drop NaN values (NOT RECOMMENDED)
     # cleaner.clean_with_dropna()
-    # Uncomment this line to clean the data with mean
+    # Uncomment this line to replace NaN values with the mean (NOT RECOMMENDED)
     # cleaner.clean_with_mean()
-    df = cleaner.clean_with_zeros()
+    # Uncomment this line to replace NaN values with zeros (NOT RECOMMENDED)
+    # df = cleaner.clean_with_zeros()
     # datamanager.print_data()
 
     datamanager.save_to_csv("data/cleaned_student_scores_random_names.csv")
