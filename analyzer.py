@@ -57,6 +57,7 @@ class Analyzer:
                 "English": ["sum", "count"]
             }
         )
+        print(data)
         student_average_grade: Series = (
                 data.xs('sum', axis=1, level=1).sum(axis=1) /   # type: ignore
                 data.xs('count', axis=1, level=1).sum(axis=1)   # type: ignore
@@ -90,38 +91,53 @@ class Analyzer:
         new_df.to_excel("data/semester_average.xlsx", index=True)
 
     @staticmethod
-    def comparison(grades: list) -> bool:
+    def comparison(stud_dict: dict) -> str:
         """
-        Compares the list to a sorted version of the list and returns True
-        if the list is sorted.
+        Compares the values of the dictionary and returns the key of the dictionary if the
+        values are sorted in ascending order naturally.
 
-        :param grades: list: list containing the average score.
-        :return: bool: True if the list is sorted, False otherwise.
+        :param stud_dict: dict: Dictionary containing the student, semester and the average score.
+        :return: str: The student who's average score got better throughout the semesters.
         """
-        sorted_values: list = sorted(grades)
-        if len(grades) <= 1:
-            return False
-        return list(grades) == sorted_values
+        values_list: list = list(stud_dict.values())
+        sorted_values: list = sorted(values_list)
+        # print(values_list)
+        if sorted_values == values_list and values_list != []:
+            student_name = list(stud_dict.keys())[0]
+            # print(sorted_values, values_list)
+            return student_name
 
     def students_who_got_better(self) -> None:
         """
-        Groups the dataframe by student and semester, calculates
-        the average score and for each student checks if the average
-        cscore got better throughout the semesters
+        Groups the dataframe by student and semester, calculates the average score and
+        for each student checks if the average score got better throughout the semesters
         with the help of the comparison method.
         """
         grouped = self.df.groupby(["Student", "Semester"]).first()
         grouped_average = grouped.mean(axis=1)
+        previous_student = None
+        previous_value = None
+        student_dict = {}
+        for student, group in grouped_average.items():
+            student_name, semester = student
+            if previous_student is None:
+                previous_student = student_name
+                previous_value = group
 
-        student_improved = grouped_average.groupby(level=0).filter(
-            lambda x: self.comparison(x.values)
-        )
-        students = list(student_improved.index)
-        student_names = [student[0] for student in students]
-        unique_students = set(student_names)
+            if previous_student != student_name:
+                previous_student = student_name
+                previous_value = group
+                compared = self.comparison(student_dict)
+                if compared is not None:
+                    print(compared)
+                student_dict = {}
+            else:
+                student_dict[previous_student] = previous_value
+                student_dict[student] = group
 
-        for student in unique_students:
-            print(student)
+        compared = self.comparison(student_dict)
+        if compared:
+            print(compared)
 
     def average_all_subject(self) -> tuple:
         """
