@@ -118,22 +118,22 @@ class Analyzer:
         previous_student = None
         previous_value = None
         student_dict = {}
-        for student, group in grouped_average.items():
+        for student, score in grouped_average.items():
             student_name, semester = student
             if previous_student is None:
                 previous_student = student_name
-                previous_value = group
+                previous_value = score
 
             if previous_student != student_name:
                 previous_student = student_name
-                previous_value = group
+                previous_value = score
                 compared = self.comparison(student_dict)
                 if compared is not None:
                     print(compared)
                 student_dict = {}
             else:
                 student_dict[previous_student] = previous_value
-                student_dict[student] = group
+                student_dict[student] = score
 
         compared = self.comparison(student_dict)
         if compared:
