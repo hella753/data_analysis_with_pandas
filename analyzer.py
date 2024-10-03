@@ -93,33 +93,42 @@ class Analyzer:
     @staticmethod
     def comparison(stud_dict: dict) -> str:
         """
-        Compares the values of the dictionary and returns the key of the dictionary if the
-        values are sorted in ascending order naturally.
+        Compares the values of the dictionary and returns the key
+        of the dictionary if the values are sorted in ascending
+        order naturally.
 
-        :param stud_dict: dict: Dictionary containing the student, semester and the average score.
-        :return: str: The student who's average score got better throughout the semesters.
+        :param stud_dict: dict: Dictionary containing the student,
+        semester and the average score.
+        :return: str: The student who's average score got better
+        throughout the semesters.
         """
         values_list: list = list(stud_dict.values())
         sorted_values: list = sorted(values_list)
         # print(values_list)
-        if sorted_values == values_list and values_list != []:
+        if sorted_values == values_list and values_list:
             student_name = list(stud_dict.keys())[0]
             # print(sorted_values, values_list)
             return student_name
 
     def students_who_got_better(self) -> None:
         """
-        Groups the dataframe by student and semester, calculates the average score and
-        for each student checks if the average score got better throughout the semesters
+        Groups the dataframe by student and semester, calculates
+        the average score and for each student checks if the average
+        score got better throughout the semesters
         with the help of the comparison method.
         """
         grouped = self.df.groupby(["Student", "Semester"]).first()
         grouped_average = grouped.mean(axis=1)
+
+        # For tracking changes
         previous_student = None
         previous_value = None
         student_dict = {}
+
         for student, score in grouped_average.items():
             student_name, semester = student
+
+            # For the first student
             if previous_student is None:
                 previous_student = student_name
                 previous_value = score
@@ -128,13 +137,14 @@ class Analyzer:
                 previous_student = student_name
                 previous_value = score
                 compared = self.comparison(student_dict)
-                if compared is not None:
+                if compared:
                     print(compared)
                 student_dict = {}
             else:
                 student_dict[previous_student] = previous_value
                 student_dict[student] = score
 
+        # For the last student
         compared = self.comparison(student_dict)
         if compared:
             print(compared)
